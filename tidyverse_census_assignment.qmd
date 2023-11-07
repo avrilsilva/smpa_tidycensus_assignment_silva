@@ -128,34 +128,50 @@ The top five counties in the data-- Prince George's County, Montgomery County, T
 Join the ZCTA dataframe to the zip totals dataframe and calculate a per capita rate for mail ballots per 100 population in each ZCTA, and write code to answer the following questions?
 
 -   Which zip code *that has returned at least 100 mail ballots* has the highest per capita rate?
+
+The zip code that returned at least 100 mail ballots and had the highest per capita rate was 18459. 
+
 -   Where is that zip code and what does Census Reporter say about its demographics?
+
+The zip code is in northeast Pennsylvania near Scranton, and its demographics listed on Census Reporter include: Median Age of 49.6, 5.5% of people under the poverty line, and 95% white population. 
+
 -   For zip codes with a per capita rate of at least 10 returned ballots per 100 people, how many have median incomes of at least \$100,000?
+
+Four zip codes have a per capita rate of at least 10 returned ballots per 100 people and have at least a median income of $100,000. 
+
 -   How many have median incomes less than the state figure of \$68,957?
+
+1214 zip codes have a median income less than the state figure of $68,957. 
+
 -   What's the most interesting one from this last result?
 
+The one I find to be the most interesting is the zip code 15921, which has the highest per capita, but also the lowest population listed at 54. So, there may be something going on. 
+
 ```{r}
-pennvariables <- load_variables(2019, "acs1", cache = TRUE)
+pennvariables <- load_variables(2019, "acs5", cache = TRUE)
 
 myvars <- c(tot_pop2019 <- "B01003_001", med_income <- "B19013_001")
 
-data2019 <- get_acs(geography = "zcta", variables = c(myvars), year = 2019, state = "PA", zcta = NULL, survey = "acs1", output = "wide", )
+data2019 <- get_acs(geography = "zcta", variables = c(myvars), year = 2019, survey = "acs5", state = "PA", output = "wide", )
 
-
-
-
-
-
-
-
+# This line of code, using the same principles as the code from earlier, was easy to construct. The only issue I had, however, was in finding what order all of the inputs had to be put in order for the data to go through. It ended up taking me a long time as a result, but I got it in the end. 
 
 ```
 
 
 ```{r}
 
+pa_zip_pop <- inner_join(pa_zip_totals, data2019, by = c("zip" = "GEOID"))
 
+pa_zip_pop%>%
+  rename("total_pop" = "B01003_001E")%>%
+  rename("med_income" = "B19013_001E")%>%
+  mutate(per_cap_ballots = (count/total_pop)*100)%>%
+  select("zip", "per_cap_ballots", "med_income", "total_pop", "count")%>%
+  filter(med_income <= 68957) %>% 
+  arrange(desc(per_cap_ballots))
 
-
+# For this question, I used a bunch of different arranging and filtering techniques to answer each of the questions above. To create the per capita column, however, I went back and looked at the video recording to see how to best approach columns that manipulate values in other columns, and applied a similar thought process here. It is kinda cool to see how many ways I can view a table to get exactly what values I am looking for, just by using the filtering, arranging, selecting, and mutating tools. 
 
 
 
