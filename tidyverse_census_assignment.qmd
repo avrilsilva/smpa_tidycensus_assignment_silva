@@ -66,7 +66,7 @@ get_acs(geography = "county",
         variables = medianage,
         state = "MD")
 
-# After a bunch of trial and error with the API key, I was finally able to use a similar command used in class to get the median age variable and sort it by counties in Maryland. As a result, you can find that the county, or jurisdiction, with the lowest median age in Maryland is Baltimore City, Maryland. 
+# After a bunch of trial and error with the API key, I was finally able to use a similar command used in class to get the median age variable and set its code to a newly named, "medianage" variable and sort it by counties in Maryland. As a result, you can find that the county, or jurisdiction, with the lowest median age in Maryland is Baltimore City, Maryland. 
         
         
 
@@ -79,8 +79,11 @@ get_acs(geography = "county",
 **Q2** Which Maryland counties have a median age of at least 50? You can use the dataframe you just made to answer this, but you must write code to display only those counties with a median age of at least 50. 
 
 ```{r}
+get_acs(geography = "county", variables = medianage, state = "MD") %>% 
+  filter(estimate >= 50)
 
 
+# By using a similar code as the previous question but using the filtering command, you can determine that Talbot County, Maryland and Worcester County, Maryland are the two counties that have a median age of at least 50 in Maryland. 
 
 
 ```
@@ -94,15 +97,22 @@ Which county has the highest percentage of 5-17 year-olds who speak Spanish at h
 
 ```{r}
 
+totcountypop <- "B16007_002"
+verywellenglish <- "B16004_005"
 
 
+totpoptable <- get_acs(geography = "county", variables = totcountypop, state = "MD") %>%
+  rename("totpop517" = "estimate") %>% 
+  select(-variable)
+  
+spanishtable <- get_acs(geography = "county", variables = verywellenglish, state = "MD") %>%
+  rename("verywellenglish" = "estimate") %>% 
+  select(-variable)
 
+spanishfinaltable <- left_join(totpoptable, spanishtable, by=c("GEOID" = "GEOID", "NAME" = "NAME")) %>%
+  mutate(pct_517spanish = (verywellenglish / totpop517) * 100)
 
-
-
-
-
-
+# After a lot of work trying to remember how to use the "rename" function, finding the right variables, and carefully joining the two tables, I was able to create two data frames and join them to create one comprehensive table in the end that tells us that the county with the highest percentage of 5-17 year-olds that speak Spanish and can also speak English "very well" is Prince George's County, Maryland with almost 19.5%. 
 
 
 ```
@@ -110,8 +120,7 @@ Which county has the highest percentage of 5-17 year-olds who speak Spanish at h
 
 **Q4** Given the counties with the largest percentage of 5-17 year-olds that speak Spanish at home, which county stands out to you in the data as different from the others? How would you describe the top 5 counties? How would you describe Garrett County's numbers?
 
-PUT ANSWER HERE
-
+The top five counties in the data-- Prince George's County, Montgomery County, Talbot County, Frederick County, Dorchester County-- are what could be described as counties that would attract the most migrants speaking Spanish as a result of their location close to shorelines and airports, such as DCA and BWI. Additionally, these counties have some of the country's highest concentration of Central American populations in the country, another indicator that their location could be behind their high percentage of young, Spanish speakers who can speak English "very well". The county that stands out to me, as a result of some of these factors, that does not have that great a percentage is Baltimore and Baltimore City counties, where I would expect these city centers and larger counties to typically attract Spanish speaking households and immigrants. Garrett County's low percentage, of a little over 1%, could also  probably be attributed to their geographical location. The county is the located the farthest west of any other county, nearing the Appalachian where it has been a historically, predominately white population. This could account for the low percentage that, ultimately, does not surprise me. 
 
 
 **Q5** Pennsylvanians are currently requesting and submitting mail ballots for the November election. You'd like to know more about the people who live in the areas sending in mail ballots. Read in the `zip_totals.csv` file in the data folder containing the number of returned mail ballots per zip code. Then create a dataframe of Pennsylvania ZCTAs that include the following variables from the 2019 ACS: total population and median income. You will need to add `output = "wide"` to the get_acs function so that you get columns for those two variables' estimates and margins of error.
