@@ -35,7 +35,7 @@ You'll need your Census API Key:
 
 ```{r echo=FALSE}
 
-myapikey <- "4642a21a10bc9f9da971c5ad2c709160de506cc7"
+myapikey <- "2a6f8c21a30d3024e038d67d7d4eba647dc79cd4"
 
 census_api_key(myapikey, overwrite=TRUE)
 ```
@@ -59,9 +59,15 @@ censusvariables <- load_variables(2021, "acs5", cache = TRUE)
 **Q1** What is the Maryland jurisdiction with the lowest median age, according to the ACS 2021 5-year estimates? You will need to find the variable for median age first. 
 
 ```{r}
-medianage <- ""
+medianage <- "B01002_001"
 
-get_acs(geography = "county"
+
+get_acs(geography = "county", 
+        variables = medianage,
+        state = "MD")
+
+# After a bunch of trial and error with the API key, I was finally able to use a similar command used in class to get the median age variable and sort it by counties in Maryland. As a result, you can find that the county, or jurisdiction, with the lowest median age in Maryland is Baltimore City, Maryland. 
+        
         
 
 
