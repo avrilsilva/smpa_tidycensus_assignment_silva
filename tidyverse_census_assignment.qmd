@@ -134,6 +134,12 @@ Join the ZCTA dataframe to the zip totals dataframe and calculate a per capita r
 -   What's the most interesting one from this last result?
 
 ```{r}
+pennvariables <- load_variables(2019, "acs1", cache = TRUE)
+
+myvars <- c(tot_pop2019 <- "B01003_001", med_income <- "B19013_001")
+
+data2019 <- get_acs(geography = "zcta", variables = c(myvars), year = 2019, state = "PA", zcta = NULL, survey = "acs1", output = "wide", )
+
 
 
 
